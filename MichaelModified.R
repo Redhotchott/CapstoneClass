@@ -173,7 +173,8 @@ for (iyear in 1:12)  {   # loop over the 12 cool seasons 2001-2012, use the prev
 test=complete.cases(prob.fcst.rda)
 prob.fcst=prob.fcst.rda[test,]
 
-#write.table(prob.fcst,file="michaels_classification.txt")
+write.table(prob.fcst,file="prob.fcst.txt")
+write.table(param, 'MichaelAB.txt')
 
 # Calculate Brier skill scores for every category
 
@@ -187,7 +188,7 @@ for (k in 1:K)  {
 
 round( 1-c(BS.rda,sum(BS.rda))/c(BS.climo,sum(BS.climo)), 3)
 
-write.table(param, 'MichaelAB.txt')
+
 # Verification: Reliability diagrams
 
 #source("~/Desktop/Mandy/reliability-diagram.r")
