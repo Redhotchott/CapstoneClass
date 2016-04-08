@@ -3,7 +3,6 @@
 ################
 rm(list=ls())
 
-
 #At this point we have 3 models runing around - climatological, baseline and regularized. 
 # after this assignment we will have the bss for the last 2. 
 
