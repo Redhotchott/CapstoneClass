@@ -1,19 +1,19 @@
 ###### HW5 #####
 #Stat Practicum#
 ################
+#Modified
 rm(list=ls())
 
 #At this point we have 3 models runing around - climatological, baseline and regularized. 
 # after this assignment we will have the bss for the last 2. 
 
-setwd('/Volumes/NO NAME/Capstone/HW5')
-setwd('E:/Capstone/HW5')
+load('predictors.Rdata')
 # load('E:/Capstone/predictors.Rdata')
 #load('/Volumes/NO NAME/Capstone/predictors.Rdata')
 library(sn)
 library(fields)
 library(mvtnorm)
- 
+
 #read.table(file="baseline_classification.txt", header=T)
 
 # dates:        all dates for which data are available
@@ -105,19 +105,19 @@ ind=0
 for(i in 1:12){
   train.years=1996:2000+i-1
   test.years=2000+i
-
+  
   print(i)
-
+  
   train.labels=head(which((years>=train.years[1] & months >8)),1):tail(which(years<=train.years[5]+1 & months <6),1)
   test.labels=which((years==test.years & months>8) | (years==test.years+1 & months < 6))
-
-
+  
+  
   train.rows=which(date.ind%in%train.labels)
   test.rows=which(date.ind%in%test.labels)
-
+  
   train.nn[i]=length(train.rows)
   test.nn[i]=length(test.rows)
-
+  
   #######################################################
   ##Computing means and covariances for each precip type
   #######################################################
@@ -125,30 +125,30 @@ for(i in 1:12){
   snow.rows=which(ptype[train.rows]=="SN")
   pellet.rows=which(ptype[train.rows]=="IP")
   ice.rows=which(ptype[train.rows]=="FZRA")
-
+  
   mean.train[[1]][,i]=apply(Twb.prof[train.rows[rain.rows],cols],2,mean)
   mean.train[[2]][,i]=apply(Twb.prof[train.rows[snow.rows],cols],2,mean)
   mean.train[[3]][,i]=apply(Twb.prof[train.rows[pellet.rows],cols],2,mean)
   mean.train[[4]][,i]=apply(Twb.prof[train.rows[ice.rows],cols],2,mean)
-
+  
   cov.train[[1]][[i]]=cov(Twb.prof[train.rows[rain.rows],cols])
   cov.train[[2]][[i]]=cov(Twb.prof[train.rows[snow.rows],cols])
   cov.train[[3]][[i]]=cov(Twb.prof[train.rows[pellet.rows],cols])
   cov.train[[4]][[i]]=cov(Twb.prof[train.rows[ice.rows],cols])
-
+  
   #######################################################
   ##Computing probabilities of observations belonging to
   ##each of the 4 groups
   #######################################################
-
+  
   for(j in 1:test.nn[i]){
     if(j%%1000==0){print(j)}
     ind=ind+1
-
+    
     station.j=station.ind[test.rows[j]]
     mon.j=months[date.ind[test.rows[j]]]
     mon.col=which(sort(unique(months))==mon.j)
-
+    
     # #baseline
     # pi.smk=prior.probs[station.j,mon.col,]
     # pi.den.rain=pi.smk[1]*dmvnorm(Twb.prof[test.rows[j],cols], mean.train[[1]][,i], cov.train[[1]][[i]])
@@ -162,7 +162,7 @@ for(i in 1:12){
     pi.den.snow=pi.smk[2]
     pi.den.pellet=pi.smk[3]
     pi.den.freeze=pi.smk[4]
-
+    
     collection=c(pi.den.rain,pi.den.snow,pi.den.pellet,pi.den.freeze)
     prob.hats[ind,1:4]=collection/sum(collection)
     prob.hats[ind,5]=ptype[test.rows[j]]
@@ -249,20 +249,11 @@ for(i in 1:12){
 #######Problem #2#####
 ######################
 BS.func<-function(prob.hats){
-
-  #   B.score<-vector(mode='double',length=nrow(prob.hat))
-#   classes<-c('RA','SN', 'FZRA', 'IP')
-#   for (i in length(prob.hat)){
-#     B.score.i<-vector(mode='double',length=4)
-#     for (j in 1:4){
-#       if(prob.hat[5,i]==classes[j]){B.score.i[j]<-(as.numeric(prob.hat[j,i])-1)^2} else {B.score.i[j]<-(as.numeric(prob.hat[j,i]))^2}
-#     }
-#     B.score[i]<-sum(B.score.i)
-#   }
-#   return(sum(B.score,na.rm=T)/length(B.score))
-
+  
   classes=c("RA","SN","IP","FZRA")
-  #classes=c("RA","SN","FZRA", "IP") #for michaels
+  
+  #classes=c("RA","SN","FZRA", "IP") #for michaels 
+  # actually I think it is SN RA IP FZRA
   BS=0
   for(i in 1:4){
     matches=which(prob.hats[,5]==classes[i])
@@ -290,7 +281,7 @@ ab.BSS<-function(param,set,BS.ref){
   if(a <0 | b <0){return(0)}
   
   cov.reg<-lapply(1:4,cov.set, param=c(a,b),set=set)
-
+  
   prob.hats.reg=data.frame(matrix(0,nrow=sum(train.nn),ncol=5))
   ind=0
   for(j in 1:length(train.rows)){
@@ -312,7 +303,7 @@ ab.BSS<-function(param,set,BS.ref){
     prob.hats.reg[ind,5]=ptype[train.rows[j]]
     
   }
-
+  
   BS=BS.func(prob.hats.reg)
   BSS<-1-BS/BS.ref
   return(-BSS)
@@ -330,7 +321,7 @@ prob.hat.michael=data.frame(matrix(0,nrow=sum(test.nn),ncol=5))
 for(i in 1:12){
   train.years=1996:2000+i-1
   test.years=2000+i
-    
+  
   print(i)
   
   train.labels=head(which((years>=train.years[1] & months >8)),1):tail(which(years<=train.years[5]+1 & months <6),1)
@@ -374,7 +365,7 @@ for(i in 1:12){
     station.j=station.ind[train.rows[j]]
     mon.j=months[date.ind[train.rows[j]]]
     mon.col=which(sort(unique(months))==mon.j)
-  
+    
     #climatological
     pi.smk=prior.probs[station.j,mon.col,]
     pi.den.rain=pi.smk[1]
@@ -392,10 +383,10 @@ for(i in 1:12){
   #######################################################
   ##computing the optimal a and b for use in the regularization
   #######################################################
-
+  
   ab.start=optim(ab.start, ab.BSS, set=i, BS.ref=BS.ref)$par
   ab.all[i,]=ab.start 
-
+  
   
   # cov.reg[[1]][[i]]=ab.start[1]*cov.train[[1]][[i]]+ab.start[2]*diag(1,length(cols))
   # cov.reg[[2]][[i]]=ab.start[1]*cov.train[[2]][[i]]+ab.start[2]*diag(1,length(cols))
@@ -412,18 +403,18 @@ for(i in 1:12){
   for(j in 1:length(test.rows)){
     if(j%%1000==0){print(j)}
     ind=ind+1
-
+    
     station.j=station.ind[test.rows[j]]
     mon.j=months[date.ind[test.rows[j]]]
     mon.col=which(sort(unique(months))==mon.j)
-
+    
     #baseline
     pi.smk=prior.probs[station.j,mon.col,]
     pi.den.rain=pi.smk[1]*dmvnorm(Twb.prof[test.rows[j],cols], mean.train[[1]][,i], cov.reg[[1]][[i]])
     pi.den.snow=pi.smk[2]*dmvnorm(Twb.prof[test.rows[j],cols], mean.train[[2]][,i], cov.reg[[2]][[i]])
     pi.den.pellet=pi.smk[3]*dmvnorm(Twb.prof[test.rows[j],cols], mean.train[[3]][,i], cov.reg[[3]][[i]])
     pi.den.freeze=pi.smk[4]*dmvnorm(Twb.prof[test.rows[j],cols], mean.train[[4]][,i], cov.reg[[4]][[i]])
-
+    
     collection=c(pi.den.rain,pi.den.snow,pi.den.pellet,pi.den.freeze)
     prob.hat.michael[ind,1:4]=collection/sum(collection)
     prob.hat.michael[ind,5]=ptype[test.rows[j]]
