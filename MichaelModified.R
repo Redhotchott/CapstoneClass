@@ -188,6 +188,7 @@ for (k in 1:K)  {
 round( 1-c(BS.rda,sum(BS.rda))/c(BS.climo,sum(BS.climo)), 3)
 
 write.table(param, 'MichaelAB.txt')
+
 # Verification: Reliability diagrams
 
 #source("~/Desktop/Mandy/reliability-diagram.r")
@@ -206,6 +207,7 @@ for (k in 1:K)  {
 
 plot(x/n,y/n, type='b', col=c('r','g','b','y'), main="Reliability Plot", xlab="Forecasted Probability", ylab="Observed Probability", xlim=c(0,1), ylim=c(0,1))
 
+<<<<<<< HEAD
 # for (k in 1:K)  {
 #   I <- outer(prob.fcst.rda[use,k], breaks[-length(breaks)], ">=") & outer(prob.fcst.rda[use,k], breaks[-1], "<")
 #   n[k,] <- apply(I, 2, sum)
