@@ -173,7 +173,7 @@ for (iyear in 1:12)  {   # loop over the 12 cool seasons 2001-2012, use the prev
 test=complete.cases(prob.fcst.rda)
 prob.fcst=prob.fcst.rda[test,]
 
-write.table(prob.fcst,file="prob.fcst.txt")
+write.table(prob.fcst,file="prob.fcst.txt") # equal to the michael's forecast on the problem
 write.table(param, 'MichaelAB.txt')
 
 # Calculate Brier skill scores for every category
@@ -186,16 +186,12 @@ for (k in 1:K)  {
   BS.climo[k] <- mean((prob.fcst.climo[use,k]-1*(ptype[use]==k))^2,na.rm=TRUE)
 }
 
-
-BSScat<-round( 1-c(BS.rda,sum(BS.rda))/c(BS.climo,sum(BS.climo)), 3)
-
 round( 1-c(BS.rda,sum(BS.rda))/c(BS.climo,sum(BS.climo)), 3)
 
 
 # Verification: Reliability diagrams
 
 #source("~/Desktop/Mandy/reliability-diagram.r")
-prob.fcst.rda<-read.table('michaels_classification.txt')
 breaks <- round(seq(-0.025,1.025,0.05),3)
 
 n <- x <- y <- matrix(0,K,length(breaks)-1)
