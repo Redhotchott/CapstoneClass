@@ -384,16 +384,16 @@ for(i in 1:12){
   ##computing the optimal a and b for use in the regularization
   #######################################################
   
-  ab.start=optim(ab.start, ab.BSS, set=i, BS.ref=BS.ref)$par
+  ab.start=optim(ab.start, ab.BSS, set=i, BS.ref=BS.ref, control=list(parscale=c(.1,3)))$par
   ab.all[i,]=ab.start 
   
   
-  # cov.reg[[1]][[i]]=ab.start[1]*cov.train[[1]][[i]]+ab.start[2]*diag(1,length(cols))
-  # cov.reg[[2]][[i]]=ab.start[1]*cov.train[[2]][[i]]+ab.start[2]*diag(1,length(cols))
-  # cov.reg[[3]][[i]]=ab.start[1]*cov.train[[3]][[i]]+ab.start[2]*diag(1,length(cols))
-  # cov.reg[[4]][[i]]=ab.start[1]*cov.train[[4]][[i]]+ab.start[2]*diag(1,length(cols))
-  # 
-  # 
+  cov.reg[[1]][[i]]=ab.start[1]*cov.train[[1]][[i]]+ab.start[2]*diag(1,length(cols))
+  cov.reg[[2]][[i]]=ab.start[1]*cov.train[[2]][[i]]+ab.start[2]*diag(1,length(cols))
+  cov.reg[[3]][[i]]=ab.start[1]*cov.train[[3]][[i]]+ab.start[2]*diag(1,length(cols))
+  cov.reg[[4]][[i]]=ab.start[1]*cov.train[[4]][[i]]+ab.start[2]*diag(1,length(cols))
+  
+  
   
   
   #######################################################
