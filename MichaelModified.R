@@ -1,6 +1,6 @@
 #Michael Modified 
 # trying to use previous ab values to get the next ones to speed up run time. 
-
+rm(list=ls())
 
 load("predictors.Rdata")
 
@@ -186,8 +186,8 @@ for (k in 1:K)  {
   BS.climo[k] <- mean((prob.fcst.climo[use,k]-1*(ptype[use]==k))^2,na.rm=TRUE)
 }
 
-round( 1-c(BS.rda,sum(BS.rda))/c(BS.climo,sum(BS.climo)), 3)
-
+BS.scores.mich<-round( 1-c(BS.rda,sum(BS.rda))/c(BS.climo,sum(BS.climo)), 3)
+write.table(BS.scores.mich, 'BSMICHAEL')
 
 # Verification: Reliability diagrams
 
