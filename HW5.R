@@ -7,8 +7,8 @@ rm(list=ls())
 # after this assignment we will have the bss for the last 2. 
 
 setwd('/Volumes/NO NAME/Capstone/HW5')
-setwd('E:/Capstone/HW5')
-# load('E:/Capstone/predictors.Rdata')
+setwd('E:/CapstoneClass/HW5')
+load('predictors.Rdata')
 #load('/Volumes/NO NAME/Capstone/predictors.Rdata')
 library(sn)
 library(fields)
