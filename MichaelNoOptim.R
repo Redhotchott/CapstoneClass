@@ -3,6 +3,8 @@
 rm(list=ls())
 
 load("predictors.Rdata")
+library('sn')
+library('fields')
 param<-read.table('MichaelAB.txt')
 # dates:        all dates for which data are available
 # stations:     names of all stations for which data are available
@@ -136,6 +138,12 @@ for (iyear in 1:12)  {   # loop over the 12 cool seasons 2001-2012, use the prev
     Sigma.K[,,k] <- cov(Twb.prof.train[ptype.train==k,], use="complete.obs")
   }
   
+  Sigma.K.reg <- array(dim=c(d,d,K))
+  
+  for (k in 1:K)  {
+    Sigma.K.reg[,,k] <- param[iyear,1]*Sigma.K[,,k]+param[iyear,2]*diag(d)
+  }
+  
   # Compute eigenvalue decomposition of Sigma.K
   e.K <- array(dim=c(d,K))
   v.K <- array(dim=c(d,d,K))
@@ -162,18 +170,24 @@ for (iyear in 1:12)  {   # loop over the 12 cool seasons 2001-2012, use the prev
     prob.fcst.rda[i,] <- apply(prob.rda.members,1,mean)
   }
 }
-
+classes<-c('SN', 'RA', 'IP', 'FZRA')
+par(mfrow=c(2,2))
+for(i in 1:4){
+image.plot(1:16,1:16, t(Sigma.K[16:1,,i]), zlim=c(0,60),main=paste(classes[i],' Covariance - Unreg'), xaxt="n",yaxt="n",xlab="",ylab="")
+}
+par(mfrow=c(2,2))
+for(i in 1:4){
+  image.plot(1:16,1:16, t(Sigma.K.reg[16:1,,i]), zlim=c(0,60),main=paste(classes[i],' Covariance - Reg'), xaxt="n",yaxt="n",xlab="",ylab="")
+}
 test=complete.cases(prob.fcst.rda)
 prob.fcst=prob.fcst.rda[test,]
-<<<<<<< HEAD
 # write.table(test, 'testnooptim.txt')
 # write.table(prob.fcst, 'probfcstnooptim.txt')
 # write.table(prob.fcst.rda, 'probfcstrdanooptim.txt')
-=======
+
 write.table(test, 'testnooptim.txt')
 write.table(prob.fcst, 'probfcstnooptim.txt')
 write.table(prob.fcst.rda, 'probfcstrdanooptim.txt')
->>>>>>> 1fff59a3dc473743572dc711a14371bfc292d19b
 # Calculate Brier skill scores for every category
 
 BS.rda <- BS.climo <- rep(0,K)
@@ -183,18 +197,16 @@ for (k in 1:K)  {
   BS.rda[k] <- mean((prob.fcst.rda[use,k]-1*(ptype[use]==k))^2,na.rm=TRUE)
   BS.climo[k] <- mean((prob.fcst.climo[use,k]-1*(ptype[use]==k))^2,na.rm=TRUE)
 }
-<<<<<<< HEAD
+
 BS.rda
 BS.scores.mich<-round( 1-c(BS.rda,sum(BS.rda))/c(BS.climo,sum(BS.climo)), 3)
 # write.table(BS.scores.mich, 'BSMICHAEL')
 BS.climo
 sum(BS.climo)
-=======
 
 BS.scores.mich<-round( 1-c(BS.rda,sum(BS.rda))/c(BS.climo,sum(BS.climo)), 3)
 write.table(BS.scores.mich, 'BSMICHAEL')
 
->>>>>>> 1fff59a3dc473743572dc711a14371bfc292d19b
 # Verification: Reliability diagrams
 
 #source("~/Desktop/Mandy/reliability-diagram.r")
@@ -209,11 +221,10 @@ for (k in 1:K)  {
   x[k,] <- apply(I*prob.fcst.rda[use,k], 2, sum, na.rm=TRUE)
   y[k,] <- apply(I*(ptype[use]==k), 2, sum, na.rm=TRUE)
 }
-<<<<<<< HEAD
+
 # write.table(n, 'ntable.txt')
 # write.table(x, 'xtable.txt')
 # write.table(y, 'ytable.txt')
-=======
 write.table(n, 'ntable.txt')
 write.table(x, 'xtable.txt')
 write.table(y, 'ytable.txt')
